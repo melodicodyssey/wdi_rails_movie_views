@@ -1,0 +1,24 @@
+<h1>Search results</h1>
+
+<ul>
+
+
+<%= form_for :movies, method: :post, url: add_movie_path do %>
+
+	<% @results['Search'].each do |movie| %>
+
+		<%= check_box_tag 'checked[]', "#{movie['Title']},#{movie['Year']}" %>
+
+		<%= movie['Title']%> - <%=movie['Year'] %>
+
+		</br>
+
+	<% end %>
+
+	<%= submit_tag 'Submit' %>
+
+<% end %>
+
+</ul>
+
+

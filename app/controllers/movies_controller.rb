@@ -1,29 +1,31 @@
 class MoviesController < ApplicationController
 
-  @@movie_db = [
-          {"title"=>"The Matrix", "year"=>"1999", "imdbID"=>"tt0133093", "Type"=>"movie"},
-          {"title"=>"The Matrix Reloaded", "year"=>"2003", "imdbID"=>"tt0234215", "Type"=>"movie"},
-          {"title"=>"The Matrix Revolutions", "year"=>"2003", "imdbID"=>"tt0242653", "Type"=>"movie"}]
 
   # route: GET    /movies(.:format)
   def index
-    @movies = @@movie_db
-
+    @movies = Movie.all
+binding.pry
     respond_to do |format|
       format.html
-      format.json { render :json => @@movie_db }
-      format.xml { render :xml => @@movie_db.to_xml }
+      format.json { render :json => Movie.all }
+      format.xml { render :xml => Movie.all.to_xml }
     end
   end
   # route: # GET    /movies/:id(.:format)
   def show
-    @movie = @@movie_db.find do |m|
-      m["imdbID"] == params[:id]
-    end
+    # @movie = Movie.find do |m|
+    #   m["imdbID"] == params[:id]
+    # end
+    id = params[:id]
+    @movie = Movie.find(id)
     if @movie.nil?
-      flash.now[:message] = "Movie not found" if @movie.nil?
+      flash.now[:message] = "Movie not found"
       @movie = {}
     end
+  end
+
+  def search
+    @results = JSON.parse(Typhoeus.get("www.omdbapi.com/", :params => {:s => params[:search]}).body)
   end
 
   # route: GET    /movies/new(.:format)
@@ -32,36 +34,50 @@ class MoviesController < ApplicationController
 
   # route: GET    /movies/:id/edit(.:format)
   def edit
-    @movie = @@movie_db.find do |m|
-      m["imdbID"] == params[:id]
-    end
-
-    if @movie.nil?
-      flash.now[:message] = "Movie not found" if @movie.nil?
-      @movie = {}
-    end
+    show
   end
 
   #route: # POST   /movies(.:format)
   def create
     # create new movie object from params
     movie = params.require(:movie).permit(:title, :year)
-    movie["imdbID"] = rand(10000..100000000).to_s
+    # movie["imdbID"] = rand(10000..100000000).to_s
     # add object to movie db
-    @@movie_db << movie
+    Movie.create(movie)
     # show movie page
     # render :index
+    redirect_to action: :index
+  end
+
+  def add
+      results = params[:checked]
+      results.each do |title|
+      title_year = title.split(",")
+      new_movie = {"title" => title_year[0], "year" => title_year[1]}
+      # Movie.create(new_movie)
+      # Movie.create(title: new_movie["title"], year: new_movie["year"], imdbID: new_movie["imdbID"])
+      Movie.create(new_movie)
+    end
     redirect_to action: :index
   end
 
   # route: PATCH  /movies/:id(.:format)
   def update
     #implement
+    id = params[:id]
+    changes = params.require(:movie).permit(:title, :year)
+    movie = Movie.find(id)
+    movie.update_attributes(changes)
+    redirect_to "movies/#{id}"
   end
 
   # route: DELETE /movies/:id(.:format)
   def destroy
     #implement
+    id = params[:id]
+    movie = Movie.find(id)
+    Movie.destroy(movie)
+    redirect_to "/"
   end
 
 end

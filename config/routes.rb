@@ -5,10 +5,12 @@ Movies::Application.routes.draw do
   get 'movies'  => 'movies#index', as: :movies
   post 'movies' => 'movies#create'
   get 'movies/new' => 'movies#new', as: :new_movie
+  post 'movies/add' => 'movies#add', as: :add_movie
   get 'movies/:id/edit' => 'movies#edit', as: :edit_movie
   get 'movies/:id' => 'movies#show', as: :movie
   patch 'movies/:id' => 'movies#update'
   delete 'movies/:id' => 'movies#destroy'
+  post 'movies/search' => 'movies#search'
 
 
 
