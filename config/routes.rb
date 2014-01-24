@@ -5,6 +5,8 @@ Movies::Application.routes.draw do
   get 'movies'  => 'movies#index', as: :movies
   post 'movies' => 'movies#create'
   get 'movies/new' => 'movies#new', as: :new_movie
+  get 'movies/next/:id' => 'movies#next'
+  get 'movies/prev/:id' => 'movies#prev'
   post 'movies/add' => 'movies#add', as: :add_movie
   get 'movies/:id/edit' => 'movies#edit', as: :edit_movie
   get 'movies/:id' => 'movies#show', as: :movie

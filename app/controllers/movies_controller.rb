@@ -4,7 +4,7 @@ class MoviesController < ApplicationController
   # route: GET    /movies(.:format)
   def index
     @movies = Movie.all
-binding.pry
+    # binding.pry
     respond_to do |format|
       format.html
       format.json { render :json => Movie.all }
@@ -16,6 +16,10 @@ binding.pry
     # @movie = Movie.find do |m|
     #   m["imdbID"] == params[:id]
     # end
+
+    /movies/:id
+    "/movies/4"
+
     id = params[:id]
     @movie = Movie.find(id)
     if @movie.nil?
@@ -66,9 +70,10 @@ binding.pry
     #implement
     id = params[:id]
     changes = params.require(:movie).permit(:title, :year)
+    # changes = {:title => params[:movie][:title], :year => params[:movie][:year]}
     movie = Movie.find(id)
     movie.update_attributes(changes)
-    redirect_to "movies/#{id}"
+    redirect_to "/movies/#{id}"
   end
 
   # route: DELETE /movies/:id(.:format)
@@ -78,6 +83,32 @@ binding.pry
     movie = Movie.find(id)
     Movie.destroy(movie)
     redirect_to "/"
+  end
+
+  def next
+    # params[:id].nil? ? id = 0 : id = params[:id].to_1 + 1
+    # # redirect_to "movies/#{id+1}"
+    # @movie = nil
+    # while @movie.nil?
+    # @movie = Movie.find(id)
+    # i += 1
+    # end
+    # redirect_to action: :show
+    id = params[:id]
+    @movie = nil
+    while @movie == nil
+      @movie = Movie.find(id)
+      id += 1
+    end
+    show
+  end
+
+  def prev
+    movies = Movies.all
+    params[:id].nil? ? id = movie.size.to_i : id = params[:id].to_i - 1
+    # redirect_to "movies/#{id-1}"
+    @movie = Movie.find(id)
+    redirect_to action: :show
   end
 
 end
